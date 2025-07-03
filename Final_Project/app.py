@@ -20,7 +20,7 @@ st.markdown(
         }
     </style>
     <p <p class='author-info'>Created by <strong>Prasad Baban Parjane</strong> | <a href='https://github.com/Prasad777777' target='_blank'>GitHub</a><br>
-    This is a <strong>CSI Internship Project</strong> at <strong>Celebal Technologies</strong>.</p>
+    <strong>CSI Internship Project</strong> at <strong>Celebal Technologies - 2025</strong>.</p>
     """,
     unsafe_allow_html=True
 )
