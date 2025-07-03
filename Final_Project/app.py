@@ -113,3 +113,16 @@ st.write("### 🔍 Prediction Result")
 if st.button("🚀 Predict"):
     prediction = performance_model.predict(data)
     st.success(f"🎯 The predicted student performance score is: **{prediction[0]:.2f}**")
+
+
+# Footer
+st.markdown("---")
+st.markdown(
+    """
+    <div style='text-align: center; font-size: 16px;'>
+        Developed with ❤️ by <b>Prasad Baban Parjane</b><br>
+        <a href='https://github.com/Prasad777777' target='_blank'>🌐 GitHub: github.com/Prasad777777</a>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
