@@ -29,7 +29,7 @@ working_dir = os.path.dirname(os.path.abspath(__file__))
 performance_model = pickle.load(open(f"{working_dir}/student_performance_model.sav", 'rb'))
 
 # Title and description
-st.title("🎓 Student Performance Predictor")
+st.title("🎓 Student Exam Score Prediction")
 st.write("Fill in the details below to predict the student's performance score.")
 
 # Create form layout using columns
