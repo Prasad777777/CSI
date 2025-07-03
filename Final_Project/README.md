@@ -15,7 +15,7 @@
 
 ## 📌 Project Description
 
-This Streamlit web application predicts a student's **exam performance score** based on multiple academic, behavioral, and socio-economic factors. Designed for CSI's internship program at Celebal Technologies, the project demonstrates end-to-end ML integration with a clean and professional user interface.
+This project aims to predict students' exam scores based on features such as the number of hours studied, previous exam scores, and attendance. Regression techniques will be used to build a model that estimates the exam score of a student given these input features. The project can provide insights into factors influencing student performance and help educators identify students who may need additional support.
 
 ---
 
@@ -45,9 +45,7 @@ This Streamlit web application predicts a student's **exam performance score** b
 ---
 
 ## 🖼️ Sample UI
-
-> _(You can replace with your own screenshots later)_
-> ![App Screenshot Placeholder](https://via.placeholder.com/800x400.png?text=Student+Performance+App+UI)
+![Student Performance Predictor UI](img1.png)
 
 ---
 
