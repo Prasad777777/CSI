@@ -4,13 +4,28 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
-
 from sklearn.preprocessing import StandardScaler
+from streamlit_lottie import st_lottie
+import json
+import requests
 
 # Set page configuration
 st.set_page_config(page_title="Student Exam Score Prediction", layout="wide", page_icon="📊")
 
-# Add author and GitHub link
+# Load Lottie animation from URL or file
+def load_lottieurl(url: str):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+# Lottie Animation URLs
+celebal_lottie = load_lottieurl("https://assets6.lottiefiles.com/packages/lf20_tijmpv.json")  # Example education animation
+
+# Add Lottie animation and logo
+st_lottie(celebal_lottie, height=200, key="celebal")
+
+# Author info
 st.markdown(
     """
     <style>
@@ -24,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Load the saved model
+# Load model
 working_dir = os.path.dirname(os.path.abspath(__file__))
 performance_model = pickle.load(open(f"{working_dir}/student_performance_model.sav", 'rb'))
 
@@ -32,10 +47,9 @@ performance_model = pickle.load(open(f"{working_dir}/student_performance_model.s
 st.title("🎓 Student Exam Score Prediction")
 st.write("Fill in the details below to predict the student's performance score.")
 
-# Create form layout using columns
+# Form layout
 col1, col2, col3 = st.columns(3)
 
-# Input fields in col1
 with col1:
     hours_studied = st.number_input("📖 Hours Studied", min_value=1, max_value=44, step=1)
     attendance = st.slider("🎓 Attendance (%)", min_value=60, max_value=100, step=1)
@@ -44,20 +58,18 @@ with col1:
     extracurricular_activities = st.selectbox("🏆 Extracurricular Activities", ["No", "Yes"])
     sleep_hours = st.selectbox("💤 Sleep Hours", [4, 5, 6, 7, 8, 9, 10])
 
-# Input fields in col2
 with col2:
     previous_scores = st.slider("📊 Previous Scores (%)", min_value=50, max_value=100, step=1)
     motivation_level = st.selectbox("💪 Motivation Level", ["Low", "Medium", "High"])
     internet_access = st.selectbox("🌐 Internet Access", ["Yes", "No"])
-    tutoring_sessions = st.selectbox("📚 Tutoring Sessions", [0, 1, 2, 3, 4, 5, 6, 7, 8])
+    tutoring_sessions = st.selectbox("📚 Tutoring Sessions", list(range(9)))
     family_income = st.selectbox("💰 Family Income", ["Low", "Medium", "High"])
     teacher_quality = st.selectbox("👩‍🏫 Teacher Quality", ["Low", "Medium", "High"])
 
-# Input fields in col3
 with col3:
     school_type = st.selectbox("🏫 School Type", ["Public", "Private"])
     peer_influence = st.selectbox("👫 Peer Influence", ["Negative", "Neutral", "Positive"])
-    physical_activity = st.selectbox("🏃 Physical Activity (Hours)", [0, 1, 2, 3, 4, 5, 6])
+    physical_activity = st.selectbox("🏃 Physical Activity (Hours)", list(range(7)))
     learning_disabilities = st.selectbox("🧠 Learning Disabilities", ["No", "Yes"])
     parental_education = st.selectbox("🎓 Parental Education Level", ["High School", "College", "Postgraduate"])
     distance_from_home = st.selectbox("🏠 Distance from Home", ["Near", "Moderate", "Far"])
