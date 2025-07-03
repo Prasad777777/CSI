@@ -45,7 +45,7 @@ This project aims to predict students' exam scores based on features such as the
 ---
 
 ## 🖼️ Sample UI
-![Student Performance Predictor UI](img1.png)
+![Student Performance Predictor UI](img.png)
 
 ---
 
