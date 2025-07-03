@@ -4,35 +4,58 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+import requests
+from PIL import Image
 from sklearn.preprocessing import StandardScaler
 from streamlit_lottie import st_lottie
-import json
-import requests
 
 # Set page configuration
 st.set_page_config(page_title="Student Exam Score Prediction", layout="wide", page_icon="📊")
 
-# Load Lottie animation from URL or file
+# Load Lottie animation from working URL
 def load_lottieurl(url: str):
     r = requests.get(url)
     if r.status_code != 200:
         return None
     return r.json()
 
-# Lottie Animation URLs
-celebal_lottie = load_lottieurl("https://assets6.lottiefiles.com/packages/lf20_tijmpv.json")  # Example education animation
+celebal_lottie = load_lottieurl("https://lottie.host/4c39b5a0-8ef9-4b5e-bad6-614ce2691181/zYFqU48fL9.json")
 
-# Add Lottie animation and logo
-st_lottie(celebal_lottie, height=200, key="celebal")
+# Load Celebal logo
+working_dir = os.path.dirname(os.path.abspath(__file__))
+logo_path = os.path.join(working_dir, "download.jpeg")
+if os.path.exists(logo_path):
+    logo = Image.open(logo_path)
+    st.image(logo, width=220)
 
-# Author info
+# Add Lottie animation if available
+if celebal_lottie:
+    st_lottie(celebal_lottie, height=200, key="celebal")
+else:
+    st.warning("⚠️ Unable to load animation. Please check the Lottie URL.")
+
+# Custom CSS for red/white Celebal theme
 st.markdown(
     """
     <style>
-        .author-info {
-            font-size: 14px;
-            color: gray;
-        }
+    body {
+        background-color: #ffffff;
+    }
+    .main {
+        background-color: #ffffff;
+        color: #8B0000;
+    }
+    .block-container {
+        padding-top: 1rem;
+    }
+    .stButton>button {
+        background-color: #8B0000;
+        color: white;
+    }
+    .author-info {
+        font-size: 14px;
+        color: gray;
+    }
     </style>
     <p class='author-info'>Created by <strong>Prasad Baban Parjane</strong> | <a href='https://github.com/Prasad777777' target='_blank'>GitHub</a></p>
     """,
@@ -40,7 +63,6 @@ st.markdown(
 )
 
 # Load model
-working_dir = os.path.dirname(os.path.abspath(__file__))
 performance_model = pickle.load(open(f"{working_dir}/student_performance_model.sav", 'rb'))
 
 # Title and description
@@ -98,13 +120,7 @@ data = pd.DataFrame({
     'Gender': [gender]
 })
 
-ordered_columns = [
-    'Hours_Studied', 'Attendance', 'Parental_Involvement', 'Access_to_Resources', 'Extracurricular_Activities',
-    'Sleep_Hours', 'Previous_Scores', 'Motivation_Level', 'Internet_Access', 'Tutoring_Sessions',
-    'Family_Income', 'Teacher_Quality', 'School_Type', 'Peer_Influence', 'Physical_Activity',
-    'Learning_Disabilities', 'Parental_Education_Level', 'Distance_from_Home', 'Gender'
-]
-
+ordered_columns = list(data.columns)
 data = data[ordered_columns]
 
 # Custom scaling
@@ -118,20 +134,25 @@ data['Sleep_Hours'] = custom_scale(data['Sleep_Hours'][0], 4, 10)
 data['Tutoring_Sessions'] = custom_scale(data['Tutoring_Sessions'][0], 0, 8)
 data['Physical_Activity'] = custom_scale(data['Physical_Activity'][0], 0, 6)
 
-# Manual label encoding
-data['Gender'] = data['Gender'].map({'Male': 1, 'Female': 0})
-data['Extracurricular_Activities'] = data['Extracurricular_Activities'].map({'No': 0, 'Yes': 1})
-data['Internet_Access'] = data['Internet_Access'].map({'Yes': 1, 'No': 0})
-data['School_Type'] = data['School_Type'].map({'Public': 1, 'Private': 0})
-data['Learning_Disabilities'] = data['Learning_Disabilities'].map({'No': 0, 'Yes': 1})
-data['Parental_Involvement'] = data['Parental_Involvement'].map({'Low': 0, 'Medium': 1, 'High': 2})
-data['Access_to_Resources'] = data['Access_to_Resources'].map({'Low': 0, 'Medium': 1, 'High': 2})
-data['Motivation_Level'] = data['Motivation_Level'].map({'Low': 0, 'Medium': 1, 'High': 2})
-data['Family_Income'] = data['Family_Income'].map({'Low': 0, 'Medium': 1, 'High': 2})
-data['Teacher_Quality'] = data['Teacher_Quality'].map({'Low': 0, 'Medium': 1, 'High': 2})
-data['Peer_Influence'] = data['Peer_Influence'].map({'Negative': 0, 'Neutral': 1, 'Positive': 2})
-data['Parental_Education_Level'] = data['Parental_Education_Level'].map({'High School': 0, 'College': 1, 'Postgraduate': 2})
-data['Distance_from_Home'] = data['Distance_from_Home'].map({'Near': 0, 'Moderate': 1, 'Far': 2})
+# Label encoding
+mappings = {
+    'Gender': {'Male': 1, 'Female': 0},
+    'Extracurricular_Activities': {'No': 0, 'Yes': 1},
+    'Internet_Access': {'Yes': 1, 'No': 0},
+    'School_Type': {'Public': 1, 'Private': 0},
+    'Learning_Disabilities': {'No': 0, 'Yes': 1},
+    'Parental_Involvement': {'Low': 0, 'Medium': 1, 'High': 2},
+    'Access_to_Resources': {'Low': 0, 'Medium': 1, 'High': 2},
+    'Motivation_Level': {'Low': 0, 'Medium': 1, 'High': 2},
+    'Family_Income': {'Low': 0, 'Medium': 1, 'High': 2},
+    'Teacher_Quality': {'Low': 0, 'Medium': 1, 'High': 2},
+    'Peer_Influence': {'Negative': 0, 'Neutral': 1, 'Positive': 2},
+    'Parental_Education_Level': {'High School': 0, 'College': 1, 'Postgraduate': 2},
+    'Distance_from_Home': {'Near': 0, 'Moderate': 1, 'Far': 2}
+}
+
+for col, mapping in mappings.items():
+    data[col] = data[col].map(mapping)
 
 # Prediction
 st.write("### 🔍 Prediction Result")
@@ -144,7 +165,7 @@ if st.button("🚀 Predict"):
     numeric_features = ['Hours_Studied', 'Attendance', 'Previous_Scores', 'Sleep_Hours', 'Tutoring_Sessions', 'Physical_Activity']
     scaled_data = data[numeric_features]
     fig, ax = plt.subplots(figsize=(10, 4))
-    sns.barplot(x=scaled_data.columns, y=scaled_data.iloc[0], palette='viridis', ax=ax)
+    sns.barplot(x=scaled_data.columns, y=scaled_data.iloc[0], palette='Reds', ax=ax)
     ax.set_ylim(0, 1)
     ax.set_ylabel("Scaled Value (0 to 1)")
     ax.set_title("Impact of Scaled Numerical Features")
