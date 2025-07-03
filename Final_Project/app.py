@@ -1,14 +1,30 @@
-
 import pickle
 import streamlit as st
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import os
+
 from sklearn.preprocessing import StandardScaler
 
 # Set page configuration
 st.set_page_config(page_title="Student Performance Predictor", layout="wide", page_icon="📊")
 
+# Add author and GitHub link
+st.markdown(
+    """
+    <style>
+        .author-info {
+            font-size: 14px;
+            color: gray;
+        }
+    </style>
+    <p class='author-info'>Created by <strong>Prasad Baban Parjane</strong> | <a href='https://github.com/Prasad777777' target='_blank'>GitHub</a></p>
+    """,
+    unsafe_allow_html=True
+)
+
 # Load the saved model
-import os
 working_dir = os.path.dirname(os.path.abspath(__file__))
 performance_model = pickle.load(open(f"{working_dir}/student_performance_model.sav", 'rb'))
 
@@ -70,7 +86,6 @@ data = pd.DataFrame({
     'Gender': [gender]
 })
 
-# Define the correct order of columns
 ordered_columns = [
     'Hours_Studied', 'Attendance', 'Parental_Involvement', 'Access_to_Resources', 'Extracurricular_Activities',
     'Sleep_Hours', 'Previous_Scores', 'Motivation_Level', 'Internet_Access', 'Tutoring_Sessions',
@@ -78,22 +93,20 @@ ordered_columns = [
     'Learning_Disabilities', 'Parental_Education_Level', 'Distance_from_Home', 'Gender'
 ]
 
-# Reorder the data columns to match the model's expected order
 data = data[ordered_columns]
 
-# Custom scaling function for specific ranges
+# Custom scaling
 def custom_scale(value, min_value, max_value):
     return (value - min_value) / (max_value - min_value)
 
-# Apply custom scaling for specific columns
-data['Attendance'] = custom_scale(data['Attendance'][0], 60, 100)  # Scale between 60 and 100
-data['Hours_Studied'] = custom_scale(data['Hours_Studied'][0], 1, 44)  # Scale between 1 and 44
-data['Previous_Scores'] = custom_scale(data['Previous_Scores'][0], 50, 100)  # Scale between 50 and 100
-data['Sleep_Hours'] = custom_scale(data['Sleep_Hours'][0], 4, 10)  # Scale between 4 and 10
-data['Tutoring_Sessions'] = custom_scale(data['Tutoring_Sessions'][0], 0, 8)  # Scale between 0 and 8
-data['Physical_Activity'] = custom_scale(data['Physical_Activity'][0], 0, 6)  # Scale between 0 and 6
+data['Attendance'] = custom_scale(data['Attendance'][0], 60, 100)
+data['Hours_Studied'] = custom_scale(data['Hours_Studied'][0], 1, 44)
+data['Previous_Scores'] = custom_scale(data['Previous_Scores'][0], 50, 100)
+data['Sleep_Hours'] = custom_scale(data['Sleep_Hours'][0], 4, 10)
+data['Tutoring_Sessions'] = custom_scale(data['Tutoring_Sessions'][0], 0, 8)
+data['Physical_Activity'] = custom_scale(data['Physical_Activity'][0], 0, 6)
 
-# Manual Label Encoding as per the specified mapping
+# Manual label encoding
 data['Gender'] = data['Gender'].map({'Male': 1, 'Female': 0})
 data['Extracurricular_Activities'] = data['Extracurricular_Activities'].map({'No': 0, 'Yes': 1})
 data['Internet_Access'] = data['Internet_Access'].map({'Yes': 1, 'No': 0})
@@ -108,21 +121,24 @@ data['Peer_Influence'] = data['Peer_Influence'].map({'Negative': 0, 'Neutral': 1
 data['Parental_Education_Level'] = data['Parental_Education_Level'].map({'High School': 0, 'College': 1, 'Postgraduate': 2})
 data['Distance_from_Home'] = data['Distance_from_Home'].map({'Near': 0, 'Moderate': 1, 'Far': 2})
 
-# Prediction button
+# Prediction
 st.write("### 🔍 Prediction Result")
 if st.button("🚀 Predict"):
     prediction = performance_model.predict(data)
     st.success(f"🎯 The predicted student performance score is: **{prediction[0]:.2f}**")
 
+    # 📊 Bar chart of scaled numeric inputs
+    st.write("### 📊 Input Feature Distribution")
+    numeric_features = ['Hours_Studied', 'Attendance', 'Previous_Scores', 'Sleep_Hours', 'Tutoring_Sessions', 'Physical_Activity']
+    scaled_data = data[numeric_features]
+    fig, ax = plt.subplots(figsize=(10, 4))
+    sns.barplot(x=scaled_data.columns, y=scaled_data.iloc[0], palette='viridis', ax=ax)
+    ax.set_ylim(0, 1)
+    ax.set_ylabel("Scaled Value (0 to 1)")
+    ax.set_title("Impact of Scaled Numerical Features")
+    st.pyplot(fig)
 
-# Footer
-st.markdown("---")
-st.markdown(
-    """
-    <div style='text-align: center; font-size: 16px;'>
-        Developed with ❤️ by <b>Prasad Baban Parjane</b><br>
-        <a href='https://github.com/Prasad777777' target='_blank'>🌐 GitHub: github.com/Prasad777777</a>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+    # 📋 Encoded Categorical Features Table
+    st.write("### 🧩 Encoded Categorical Features")
+    categorical_data = data.drop(columns=numeric_features)
+    st.dataframe(categorical_data.T.rename(columns={0: "Encoded Value"}))
