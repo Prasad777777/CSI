@@ -8,7 +8,7 @@ import os
 from sklearn.preprocessing import StandardScaler
 
 # Set page configuration
-st.set_page_config(page_title="Student Performance Predictor", layout="wide", page_icon="📊")
+st.set_page_config(page_title="Student Exam Score Prediction", layout="wide", page_icon="📊")
 
 # Add author and GitHub link
 st.markdown(
