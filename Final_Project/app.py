@@ -19,7 +19,8 @@ st.markdown(
             color: gray;
         }
     </style>
-    <p class='author-info'>Created by <strong>Prasad Baban Parjane</strong> | <a href='https://github.com/Prasad777777' target='_blank'>GitHub</a></p>
+    <p <p class='author-info'>Created by <strong>Prasad Baban Parjane</strong> | <a href='https://github.com/Prasad777777' target='_blank'>GitHub</a><br>
+    This is a <strong>CSI Internship Project</strong> at <strong>Celebal Technologies</strong>.</p>
     """,
     unsafe_allow_html=True
 )
