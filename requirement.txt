@@ -4,3 +4,5 @@ pandas
 fpdf
 seaborn
 matplotlib
+numpy
+streamlit-lottie
