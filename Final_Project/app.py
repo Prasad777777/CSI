@@ -4,89 +4,81 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
-from sklearn.preprocessing import StandardScaler
 
-# Page configuration
-st.set_page_config(page_title="🎓 Student Performance Predictor", layout="wide", page_icon="📊")
+# Set custom theme and logo
+st.set_page_config(
+    page_title="Student Performance Predictor - Celebal Internship",
+    layout="wide",
+    page_icon="📊"
+)
 
-# Custom CSS styling
-st.markdown("""
+# Logo & Header
+st.markdown(
+    """
     <style>
-        body {
-            background-color: #f9f9f9;
+        .main-title {
+            text-align: center;
+            color: #B22222;
         }
-        .main .block-container {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
+        .logo {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 200px;
         }
-        .author-info {
-            font-size: 15px;
-            color: #777;
-            margin-top: -10px;
+        .footer {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 30px;
+            color: #888;
         }
-        .stButton>button {
-            background-color: #4CAF50;
-            color: white;
-            font-weight: bold;
-            border-radius: 8px;
-            padding: 0.6rem 1rem;
-        }
-        .stButton>button:hover {
-            background-color: #45a049;
+        .stApp {
+            background-color: #fff8f8;
         }
     </style>
-""", unsafe_allow_html=True)
+    <img src="https://raw.githubusercontent.com/Prasad777777/CSI/main/Final_Project/download.jpeg" class="logo" />
+    <h1 class='main-title'>🎓 Student Performance Predictor</h1>
+    <p style='text-align:center;'>An Internship Project by <strong>Prasad Baban Parjane</strong> @ <a href='https://www.celebaltech.com' target='_blank'>Celebal Technologies</a> | <a href='https://github.com/Prasad777777' target='_blank'>GitHub</a></p>
+    """,
+    unsafe_allow_html=True
+)
 
-# Author credit
-st.markdown("""
-    <p class='author-info'>
-        Created by <strong>Prasad Baban Parjane</strong> ✨ |
-        <a href='https://github.com/Prasad777777' target='_blank'>GitHub</a>
-    </p>
-""", unsafe_allow_html=True)
-
-# Load model
+# Load the saved model
 working_dir = os.path.dirname(os.path.abspath(__file__))
 performance_model = pickle.load(open(f"{working_dir}/student_performance_model.sav", 'rb'))
 
-# Title
-st.title("📚 Smart Student Performance Predictor")
-st.markdown("Fill in the details below and get a smart prediction of the student's expected performance score! 🧠")
+st.write("Fill in the details below to predict the student's performance score.")
 
 # Form layout
-st.markdown("---")
 col1, col2, col3 = st.columns(3)
 
-# Inputs - col1
 with col1:
-    hours_studied = st.number_input("Hours Studied", min_value=1, max_value=44, step=1)
-    attendance = st.slider("Attendance (%)", min_value=60, max_value=100, step=1)
-    parental_involvement = st.selectbox("Parental Involvement", ["Low", "Medium", "High"])
-    access_to_resources = st.selectbox("Access to Resources", ["Low", "Medium", "High"])
-    extracurricular_activities = st.selectbox("Extracurricular Activities", ["No", "Yes"])
-    sleep_hours = st.selectbox("Sleep Hours", [4, 5, 6, 7, 8, 9, 10])
+    hours_studied = st.number_input("📖 Hours Studied", min_value=1, max_value=44, step=1)
+    attendance = st.slider("🎓 Attendance (%)", min_value=60, max_value=100, step=1)
+    parental_involvement = st.selectbox("👨‍👩‍👧 Parental Involvement", ["Low", "Medium", "High"])
+    access_to_resources = st.selectbox("📚 Access to Resources", ["Low", "Medium", "High"])
+    extracurricular_activities = st.selectbox("🏆 Extracurricular Activities", ["No", "Yes"])
+    sleep_hours = st.selectbox("💤 Sleep Hours", [4, 5, 6, 7, 8, 9, 10])
 
-# Inputs - col2
 with col2:
-    previous_scores = st.slider("Previous Scores (%)", min_value=50, max_value=100, step=1)
-    motivation_level = st.selectbox("Motivation Level", ["Low", "Medium", "High"])
-    internet_access = st.selectbox("Internet Access", ["Yes", "No"])
-    tutoring_sessions = st.selectbox("Tutoring Sessions", list(range(9)))
-    family_income = st.selectbox("Family Income", ["Low", "Medium", "High"])
-    teacher_quality = st.selectbox("Teacher Quality", ["Low", "Medium", "High"])
+    previous_scores = st.slider("📊 Previous Scores (%)", min_value=50, max_value=100, step=1)
+    motivation_level = st.selectbox("💪 Motivation Level", ["Low", "Medium", "High"])
+    internet_access = st.selectbox("🌐 Internet Access", ["Yes", "No"])
+    tutoring_sessions = st.selectbox("📚 Tutoring Sessions", list(range(0, 9)))
+    family_income = st.selectbox("💰 Family Income", ["Low", "Medium", "High"])
+    teacher_quality = st.selectbox("👩‍🏫 Teacher Quality", ["Low", "Medium", "High"])
 
-# Inputs - col3
 with col3:
-    school_type = st.selectbox("School Type", ["Public", "Private"])
-    peer_influence = st.selectbox("Peer Influence", ["Negative", "Neutral", "Positive"])
-    physical_activity = st.selectbox("Physical Activity (Hours)", list(range(7)))
-    learning_disabilities = st.selectbox("Learning Disabilities", ["No", "Yes"])
-    parental_education = st.selectbox("Parental Education Level", ["High School", "College", "Postgraduate"])
-    distance_from_home = st.selectbox("Distance from Home", ["Near", "Moderate", "Far"])
-    gender = st.selectbox("Gender", ["Male", "Female"])
+    school_type = st.selectbox("🏫 School Type", ["Public", "Private"])
+    peer_influence = st.selectbox("👫 Peer Influence", ["Negative", "Neutral", "Positive"])
+    physical_activity = st.selectbox("🏃 Physical Activity (Hours)", list(range(0, 7)))
+    learning_disabilities = st.selectbox("🧠 Learning Disabilities", ["No", "Yes"])
+    parental_education = st.selectbox("🎓 Parental Education Level", ["High School", "College", "Postgraduate"])
+    distance_from_home = st.selectbox("🏠 Distance from Home", ["Near", "Moderate", "Far"])
+    gender = st.selectbox("👤 Gender", ["Male", "Female"])
 
-# Preprocess input
-features = pd.DataFrame({
+# Data preparation
+data = pd.DataFrame({
     'Hours_Studied': [hours_studied],
     'Attendance': [attendance],
     'Parental_Involvement': [parental_involvement],
@@ -108,19 +100,33 @@ features = pd.DataFrame({
     'Gender': [gender]
 })
 
-ordered_columns = features.columns.tolist()
+# Reorder
+data = data[[
+    'Hours_Studied', 'Attendance', 'Parental_Involvement', 'Access_to_Resources',
+    'Extracurricular_Activities', 'Sleep_Hours', 'Previous_Scores', 'Motivation_Level',
+    'Internet_Access', 'Tutoring_Sessions', 'Family_Income', 'Teacher_Quality',
+    'School_Type', 'Peer_Influence', 'Physical_Activity', 'Learning_Disabilities',
+    'Parental_Education_Level', 'Distance_from_Home', 'Gender'
+]]
 
 # Scaling
-def scale(val, min_, max_): return (val - min_) / (max_ - min_)
-features['Attendance'] = scale(features['Attendance'][0], 60, 100)
-features['Hours_Studied'] = scale(features['Hours_Studied'][0], 1, 44)
-features['Previous_Scores'] = scale(features['Previous_Scores'][0], 50, 100)
-features['Sleep_Hours'] = scale(features['Sleep_Hours'][0], 4, 10)
-features['Tutoring_Sessions'] = scale(features['Tutoring_Sessions'][0], 0, 8)
-features['Physical_Activity'] = scale(features['Physical_Activity'][0], 0, 6)
+def custom_scale(value, min_v, max_v):
+    return (value - min_v) / (max_v - min_v)
+
+scaling = {
+    'Attendance': (60, 100),
+    'Hours_Studied': (1, 44),
+    'Previous_Scores': (50, 100),
+    'Sleep_Hours': (4, 10),
+    'Tutoring_Sessions': (0, 8),
+    'Physical_Activity': (0, 6)
+}
+
+for col, (min_val, max_val) in scaling.items():
+    data[col] = custom_scale(data[col][0], min_val, max_val)
 
 # Encoding
-mapping = {
+encodings = {
     'Gender': {'Male': 1, 'Female': 0},
     'Extracurricular_Activities': {'No': 0, 'Yes': 1},
     'Internet_Access': {'Yes': 1, 'No': 0},
@@ -136,28 +142,33 @@ mapping = {
     'Distance_from_Home': {'Near': 0, 'Moderate': 1, 'Far': 2}
 }
 
-for col, m in mapping.items():
-    features[col] = features[col].map(m)
+for col, mapping in encodings.items():
+    data[col] = data[col].map(mapping)
 
-# Prediction
-st.markdown("---")
-st.subheader("🎯 Prediction Result")
-if st.button("🔍 Predict Performance"):
-    result = performance_model.predict(features)
-    st.success(f"Predicted Score: **{result[0]:.2f}**")
+# Predict
+st.write("### 🔍 Prediction Result")
+if st.button("🚀 Predict"):
+    prediction = performance_model.predict(data)
+    st.success(f"🎯 Predicted Student Performance Score: **{prediction[0]:.2f}**")
 
-    # Visuals
-    st.subheader("📊 Scaled Feature Impact")
+    st.write("### 📊 Feature Breakdown")
+    num_cols = list(scaling.keys())
     fig, ax = plt.subplots(figsize=(10, 4))
-    numeric_cols = ['Hours_Studied', 'Attendance', 'Previous_Scores', 'Sleep_Hours', 'Tutoring_Sessions', 'Physical_Activity']
-    sns.barplot(x=numeric_cols, y=features[numeric_cols].iloc[0], palette="coolwarm", ax=ax)
+    sns.barplot(x=num_cols, y=data[num_cols].iloc[0], palette='Reds', ax=ax)
     ax.set_ylim(0, 1)
     ax.set_ylabel("Scaled Value")
+    ax.set_title("Scaled Numeric Inputs")
     st.pyplot(fig)
 
-    st.subheader("🧩 Encoded Categorical Values")
-    cat_data = features.drop(columns=numeric_cols).T.rename(columns={0: "Encoded Value"})
-    st.dataframe(cat_data)
+    st.write("### 🧩 Categorical Feature Encoding")
+    st.dataframe(data.drop(columns=num_cols).T.rename(columns={0: "Encoded Value"}))
 
-st.markdown("---")
-st.caption("Made with ❤️ using Streamlit")
+# Footer
+st.markdown(
+    """
+    <div class='footer'>
+        🚀 Powered by <strong>Celebal Technologies</strong> | Internship Project 2025
+    </div>
+    """,
+    unsafe_allow_html=True
+)
