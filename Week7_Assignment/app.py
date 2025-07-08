@@ -6,14 +6,36 @@ import numpy as np
 import joblib
 import altair as alt
 
-# Load trained models and preprocessing pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.pipeline import Pipeline
+
+# Load trained models
 rf_model = joblib.load('Week7_Assignment/random_forest_model.pkl')
 gb_model = joblib.load('Week7_Assignment/gradient_boosting_model.pkl')
 
-# Load the entire preprocessor (ColumnTransformer)
-preprocessor = joblib.load('Week7_Assignment/preprocessor.pkl')
+# Load training data to fit preprocessor
+df_train = pd.read_csv('titanic/train.csv')
+df_train = df_train[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']].dropna()
 
-# Set page config
+# Define preprocessing pipeline
+numeric_features = ['Age', 'Fare', 'SibSp', 'Parch']
+numeric_transformer = StandardScaler()
+
+categorical_features = ['Pclass', 'Sex', 'Embarked']
+categorical_transformer = OneHotEncoder(handle_unknown='ignore')
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', numeric_transformer, numeric_features),
+        ('cat', categorical_transformer, categorical_features)
+    ]
+)
+
+# Fit preprocessor on training data
+preprocessor.fit(df_train)
+
+# Streamlit UI setup
 st.set_page_config(page_title="Titanic Survival Prediction", layout="wide")
 
 st.markdown("""
@@ -30,14 +52,9 @@ st.markdown("""
 
 st.title("🚢 Titanic Survival Prediction App")
 
-# Sidebar for model selection
+# Sidebar model selection
 model_choice = st.sidebar.selectbox("Select Model", ["Random Forest", "Gradient Boosting"])
-
-model_map = {
-    "Random Forest": rf_model,
-    "Gradient Boosting": gb_model
-}
-model = model_map[model_choice]
+model = {"Random Forest": rf_model, "Gradient Boosting": gb_model}[model_choice]
 
 st.sidebar.markdown("### Input Passenger Details")
 
@@ -56,7 +73,7 @@ with st.container():
         fare = st.slider("Fare Paid", 0.0, 500.0, 50.0)
         embarked = st.selectbox("Port of Embarkation", ["S", "C", "Q"])
 
-# DataFrame construction
+# Construct input DataFrame
 user_input = pd.DataFrame({
     'Pclass': [pclass],
     'Sex': [sex],
@@ -67,13 +84,13 @@ user_input = pd.DataFrame({
     'Embarked': [embarked]
 })
 
-# Safe prediction using try-except
+# Safe prediction
 try:
     user_transformed = preprocessor.transform(user_input)
     prediction = model.predict(user_transformed)[0]
     pred_proba = model.predict_proba(user_transformed)[0]
 
-    # Output Block
+    # Output
     with st.container():
         st.markdown("### 🎯 Prediction Result")
         if prediction == 1:
@@ -81,7 +98,6 @@ try:
         else:
             st.error("This passenger is likely **Not to Survive** ❌")
 
-        # Chart
         chart_df = pd.DataFrame({
             'Outcome': ['Not Survived', 'Survived'],
             'Probability': pred_proba
@@ -94,14 +110,13 @@ try:
         ).properties(width=500)
         st.altair_chart(bar_chart)
 
-    # Interpretation block
     with st.expander("📘 Model Interpretation Summary"):
         st.write(f"You entered a {age}-year-old {sex} in class {pclass}, who embarked from {embarked}, paid a fare of {fare}, and was traveling with {sibsp} sibling(s)/spouse(s) and {parch} parent(s)/child(ren).")
 
 except Exception as e:
     st.error(f"Something went wrong during prediction: {str(e)}")
 
-# Dataset Summary block
+# Dataset Summary
 with st.expander("📊 Dataset Statistics"):
     df = pd.read_csv('titanic/train.csv')
     st.write("**Survival Distribution:**")
