@@ -15,7 +15,7 @@ rf_model = joblib.load('Week7_Assignment/random_forest_model.pkl')
 gb_model = joblib.load('Week7_Assignment/gradient_boosting_model.pkl')
 
 # Load training data to fit preprocessor
-df_train = pd.read_csv('Data/train.csv')
+df_train = pd.read_csv('train.csv')
 df_train = df_train[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']].dropna()
 
 # Define preprocessing pipeline
