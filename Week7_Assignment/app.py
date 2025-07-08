@@ -7,11 +7,11 @@ import joblib
 import altair as alt
 
 # Load trained models and preprocessing pipeline
-rf_model = joblib.load('random_forest_model.pkl')
-gb_model = joblib.load('gradient_boosting_model.pkl')
+rf_model = joblib.load('Week7_Assignment/random_forest_model.pkl')
+gb_model = joblib.load('Week7_Assignment/gradient_boosting_model.pkl')
 
 # Load the entire preprocessor (ColumnTransformer)
-preprocessor = joblib.load('preprocessor.pkl')
+preprocessor = joblib.load('Week7_Assignment/preprocessor.pkl')
 
 # Set page config
 st.set_page_config(page_title="Titanic Survival Prediction", layout="wide")
