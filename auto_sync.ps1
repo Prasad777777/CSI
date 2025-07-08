@@ -12,3 +12,8 @@ if (-not (git diff --cached --quiet)) {
 } else {
     Write-Output "✅ No changes to commit."
 }
+
+
+
+
+                                                                                                                                                                                                  
