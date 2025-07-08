@@ -5,18 +5,29 @@ import pandas as pd
 import numpy as np
 import joblib
 import altair as alt
-
+from io import StringIO
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.pipeline import Pipeline
 
 # Load trained models
 rf_model = joblib.load('Week7_Assignment/random_forest_model.pkl')
 gb_model = joblib.load('Week7_Assignment/gradient_boosting_model.pkl')
 
-# Load training data to fit preprocessor
-df_train = pd.read_csv('train.csv')
-df_train = df_train[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']].dropna()
+# Sample training data (10 rows only for fitting preprocessor & summary)
+sample_data = StringIO("""
+Survived,Pclass,Sex,Age,SibSp,Parch,Fare,Embarked
+1,1,female,29,0,0,211.34,S
+0,3,male,35,0,0,8.05,S
+1,2,female,26,1,0,26.00,S
+0,3,male,30,0,0,7.23,C
+0,1,male,54,0,0,51.86,S
+1,3,female,2,3,1,21.08,S
+0,3,male,20,0,0,7.23,Q
+1,1,female,38,1,0,71.28,C
+0,3,male,23,0,0,7.85,S
+1,2,female,30,0,0,10.50,S
+""")
+df_train = pd.read_csv(sample_data)
 
 # Define preprocessing pipeline
 numeric_features = ['Age', 'Fare', 'SibSp', 'Parch']
@@ -32,8 +43,8 @@ preprocessor = ColumnTransformer(
     ]
 )
 
-# Fit preprocessor on training data
-preprocessor.fit(df_train)
+# Fit preprocessor on sample data
+preprocessor.fit(df_train.drop(columns=['Survived']))
 
 # Streamlit UI setup
 st.set_page_config(page_title="Titanic Survival Prediction", layout="wide")
@@ -84,13 +95,13 @@ user_input = pd.DataFrame({
     'Embarked': [embarked]
 })
 
-# Safe prediction
+# Prediction
 try:
     user_transformed = preprocessor.transform(user_input)
     prediction = model.predict(user_transformed)[0]
     pred_proba = model.predict_proba(user_transformed)[0]
 
-    # Output
+    # Prediction Output
     with st.container():
         st.markdown("### 🎯 Prediction Result")
         if prediction == 1:
@@ -116,10 +127,9 @@ try:
 except Exception as e:
     st.error(f"Something went wrong during prediction: {str(e)}")
 
-# Dataset Summary
+# Dataset Summary block using same embedded dataset
 with st.expander("📊 Dataset Statistics"):
-    df = pd.read_csv('titanic/train.csv')
     st.write("**Survival Distribution:**")
-    st.bar_chart(df['Survived'].value_counts())
+    st.bar_chart(df_train['Survived'].value_counts())
     st.write("**Class Distribution:**")
-    st.bar_chart(df['Pclass'].value_counts())
+    st.bar_chart(df_train['Pclass'].value_counts())
