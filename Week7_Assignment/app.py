@@ -5,15 +5,13 @@ import pandas as pd
 import numpy as np
 import joblib
 import altair as alt
-import os
-
-# Set working directory path
-base_path = os.path.dirname(__file__)  # This is Week7_Assignment/
 
 # Load trained models and preprocessing pipeline
-rf_model = joblib.load(os.path.join(base_path, 'random_forest_model.pkl'))
-gb_model = joblib.load(os.path.join(base_path, 'gradient_boosting_model.pkl'))
-preprocessor = joblib.load(os.path.join(base_path, 'preprocessor.pkl'))
+rf_model = joblib.load('random_forest_model.pkl')
+gb_model = joblib.load('gradient_boosting_model.pkl')
+
+# Load the entire preprocessor (ColumnTransformer)
+preprocessor = joblib.load('preprocessor.pkl')
 
 # Set page config
 st.set_page_config(page_title="Titanic Survival Prediction", layout="wide")
@@ -105,11 +103,8 @@ except Exception as e:
 
 # Dataset Summary block
 with st.expander("📊 Dataset Statistics"):
-    try:
-        df = pd.read_csv(os.path.join(base_path, 'titanic', 'train.csv'))
-        st.write("**Survival Distribution:**")
-        st.bar_chart(df['Survived'].value_counts())
-        st.write("**Class Distribution:**")
-        st.bar_chart(df['Pclass'].value_counts())
-    except FileNotFoundError:
-        st.error("🚫 Titanic dataset not found at 'titanic/train.csv'. Please check the path.")
+    df = pd.read_csv('titanic/train.csv')
+    st.write("**Survival Distribution:**")
+    st.bar_chart(df['Survived'].value_counts())
+    st.write("**Class Distribution:**")
+    st.bar_chart(df['Pclass'].value_counts())
